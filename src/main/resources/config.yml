@@ -1,0 +1,42 @@
+# the K-D ratio is configurable to what you want it to be
+# the following placeholders exists:
+# &k - kills
+# &d - deaths
+# &s - current streak value
+# &m - max streak value
+
+MySQL: false
+MySQLhost: host
+MySQLuser: user
+MySQLpass: pw
+MySQLdb: db
+MySQLport: 3306
+
+PVPArena: false
+checkabuse: true
+abuseseconds: -1
+collectprecise: true
+clearonstart: true
+resetkillstreakonquit: false
+countregulardeaths: false
+kdcalculation: '&k/(&d+1)'
+ignoreworlds:
+- doNotTrack
+eloscore:
+  active: false
+  minimum: 18
+  default: 1500
+  maximum: 3000
+  k-factor:
+    below: 32
+    above: 16
+    threshold: 2000
+msgoverrides: false
+msg:
+  main:
+  - '&cName: &7%n'
+  - '&cKills: &7%k'
+  - '&cDeaths: &7%d'
+  - '&cRatio: &7%r'
+  - '&cStreak: &7%s'
+  - '&cMax Streak: &7%m'
