@@ -3,7 +3,7 @@ main: net.slipcor.pvpstats.$
 version: ${project.version}
 author: [slipcor, yiwan]
 depend: [SimpleORM]
-softdepend: [pvparena,PlaceholderAPI]
+softdepend: [pvparena,PlaceholderAPI, LeaderHeads]
 website: http://dev.bukkit.org/server-mods/pvp-stats/
 commands:
     pvpstats:

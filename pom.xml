@@ -75,6 +75,13 @@
             <version>1.16.18</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>me.robin.leaderheads</groupId>
+            <artifactId>leaderheads</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/LeaderHeadsAPI.jar</systemPath>
+        </dependency>
     </dependencies>
 
 </project>

@@ -5,6 +5,11 @@ import com.mengcraft.simpleorm.EbeanHandler;
 import lombok.Getter;
 import net.slipcor.pvpstats.entity.PVPKill;
 import net.slipcor.pvpstats.entity.PVPStat;
+import net.slipcor.pvpstats.lh_support.LHDeathHook;
+import net.slipcor.pvpstats.lh_support.LHEloHook;
+import net.slipcor.pvpstats.lh_support.LHKillHook;
+import net.slipcor.pvpstats.lh_support.LHMaxStreakHook;
+import net.slipcor.pvpstats.lh_support.LHStreakHook;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -98,6 +103,15 @@ public class $ extends JavaPlugin {
                 paPluginListener = new PSPAPluginListener(this);
                 getServer().getPluginManager().registerEvents(paPluginListener, this);
             }
+        }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("LeaderHeads")) {
+            new LHDeathHook(this);
+            new LHEloHook(this);
+            new LHKillHook(this);
+            new LHMaxStreakHook(this);
+            new LHStreakHook(this);
+            getLogger().info("Hook into lh. namespace i5mc-pvp");
         }
 
         loadLanguage();
