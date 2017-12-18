@@ -50,6 +50,7 @@ public class $ extends JavaPlugin {
     protected final PSPAListener paListener = new PSPAListener(this);
     private PSPAPluginListener paPluginListener;
 
+    @Getter
     private static $ plugin;
 
     @Getter
@@ -125,6 +126,7 @@ public class $ extends JavaPlugin {
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             getLogger().info("PVPStats - PlaceholderAPI found.");
             new PAPIHook(getPlugin()).hook();
+            new PvPTopVar(this).hook();
         }
 
         getLogger().info("enabled. (version " + pdfFile.getVersion() + ")");
