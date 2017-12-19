@@ -54,4 +54,12 @@ public final class PVPData {
         EntityMgr.pull(p).setElo(value);
     }
 
+    public static void setScore(Player p, int value) {
+        EntityMgr.pull(p).setScore(value);
+    }
+
+    public static int getScore(Player p) {
+        return EntityMgr.pull(p).getScore();
+    }
+
 }

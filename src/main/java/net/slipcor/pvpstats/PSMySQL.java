@@ -83,6 +83,7 @@ public final class PSMySQL {
             if (incKill(attacker)) {
                 $.getPlugin().sendPrefixed(attacker, Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
                 PVPData.setEloScore(attacker, newA);
+                PVPData.setScore(attacker, PVPData.getScore(attacker) + (newA - oldA));
             }
             if (incDeath(player)) {
                 $.getPlugin().sendPrefixed(player, Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));

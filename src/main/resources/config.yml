@@ -41,3 +41,7 @@ msg:
   - '&cStreak: &7%s'
   - '&cMax Streak: &7%m'
 top_limit: 20
+exchange:
+- id: sample
+  command: say %player_name% 兑换了一份pvp积分礼包
+  price: 100

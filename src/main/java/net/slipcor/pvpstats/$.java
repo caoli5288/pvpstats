@@ -15,12 +15,14 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,9 +35,12 @@ import java.util.concurrent.Executors;
 public class $ extends JavaPlugin {
 
     public static final ExecutorService POOL = Executors.newFixedThreadPool(1);
-
+    private static $ plugin;
+    @Getter
+    private static EbeanHandler dataSource;
+    protected final PSPAListener paListener = new PSPAListener(this);
+    private final PSListener entityListener = new PSListener(this);
     protected Plugin paHandler = null;
-
     // Settings Variables
     protected Boolean mySQL = false;
     protected String dbHost = null;
@@ -45,16 +50,7 @@ public class $ extends JavaPlugin {
     protected String dbTable = null;
     protected String dbKillTable = null;
     protected int dbPort = 3306;
-
-    private final PSListener entityListener = new PSListener(this);
-    protected final PSPAListener paListener = new PSPAListener(this);
     private PSPAPluginListener paPluginListener;
-
-    @Getter
-    private static $ plugin;
-
-    @Getter
-    private static EbeanHandler dataSource;
 
     public void onEnable() {
         plugin = this;
@@ -129,7 +125,55 @@ public class $ extends JavaPlugin {
             new PvPTopVar(this).hook();
         }
 
+        ExchangeMgr.init(getConfig().getMapList("exchange"));
+        PluginHelper.addExecutor(this, "pvpexchange", this::exchange);
+
         getLogger().info("enabled. (version " + pdfFile.getVersion() + ")");
+    }
+
+    private void loadConfig() {
+
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+
+        // get variables from settings handler
+        if (getConfig().getBoolean("MySQL", false)) {
+            this.mySQL = getConfig().getBoolean("MySQL", false);
+            this.dbHost = getConfig().getString("MySQLhost", "");
+            this.dbUser = getConfig().getString("MySQLuser", "");
+            this.dbPass = getConfig().getString("MySQLpass", "");
+            this.dbDatabase = getConfig().getString("MySQLdb", "");
+            this.dbTable = getConfig().getString("MySQLtable", "pvpstats");
+
+            if (getConfig().getBoolean("collectprecise")) {
+                this.dbKillTable = getConfig().getString("MySQLkilltable", "pvpkillstats");
+            }
+
+            this.dbPort = getConfig().getInt("MySQLport", 3306);
+        }
+
+        // Check Settings
+        if (this.mySQL) {
+            if (this.dbHost.equals("")) {
+                this.mySQL = false;
+            } else if (this.dbUser.equals("")) {
+                this.mySQL = false;
+            } else if (this.dbPass.equals("")) {
+                this.mySQL = false;
+            } else if (this.dbDatabase.equals("")) {
+                this.mySQL = false;
+            }
+        }
+
+        // Enabled SQL/MySQL
+    }
+
+    private void loadHooks() {
+        final Plugin paPlugin = getServer().getPluginManager().getPlugin("pvparena");
+        if (paPlugin != null && paPlugin.isEnabled()) {
+            getLogger().info("<3 PVP Arena");
+            this.paHandler = paPlugin;
+        }
     }
 
     private void loadLanguage() {
@@ -153,18 +197,13 @@ public class $ extends JavaPlugin {
         }
     }
 
-    private void loadHooks() {
-        final Plugin paPlugin = getServer().getPluginManager().getPlugin("pvparena");
-        if (paPlugin != null && paPlugin.isEnabled()) {
-            getLogger().info("<3 PVP Arena");
-            this.paHandler = paPlugin;
-        }
+    public static $ getPlugin() {
+        return plugin;
     }
 
-    public void sendPrefixed(final CommandSender sender, final String message) {
-        if (!"".equals(message)) {
-            sender.sendMessage(Language.MSG_PREFIX + message);
-        }
+    private void exchange(CommandSender who, List<String> input) {
+        $.thr(!(input.size() == 1), "input syntax");
+        ExchangeMgr.exchange(((Player) who), input.iterator().next());
     }
 
     public boolean onCommand(final CommandSender sender, final Command cmd, final String commandLabel, final String[] args) {
@@ -227,41 +266,10 @@ public class $ extends JavaPlugin {
         return true;
     }
 
-    private void loadConfig() {
-
-        getConfig().options().copyDefaults(true);
-        saveConfig();
-
-        // get variables from settings handler
-        if (getConfig().getBoolean("MySQL", false)) {
-            this.mySQL = getConfig().getBoolean("MySQL", false);
-            this.dbHost = getConfig().getString("MySQLhost", "");
-            this.dbUser = getConfig().getString("MySQLuser", "");
-            this.dbPass = getConfig().getString("MySQLpass", "");
-            this.dbDatabase = getConfig().getString("MySQLdb", "");
-            this.dbTable = getConfig().getString("MySQLtable", "pvpstats");
-
-            if (getConfig().getBoolean("collectprecise")) {
-                this.dbKillTable = getConfig().getString("MySQLkilltable", "pvpkillstats");
-            }
-
-            this.dbPort = getConfig().getInt("MySQLport", 3306);
+    public void sendPrefixed(final CommandSender sender, final String message) {
+        if (!"".equals(message)) {
+            sender.sendMessage(Language.MSG_PREFIX + message);
         }
-
-        // Check Settings
-        if (this.mySQL) {
-            if (this.dbHost.equals("")) {
-                this.mySQL = false;
-            } else if (this.dbUser.equals("")) {
-                this.mySQL = false;
-            } else if (this.dbPass.equals("")) {
-                this.mySQL = false;
-            } else if (this.dbDatabase.equals("")) {
-                this.mySQL = false;
-            }
-        }
-
-        // Enabled SQL/MySQL
     }
 
     public void onDisable() {
@@ -275,7 +283,7 @@ public class $ extends JavaPlugin {
         return getConfig().getStringList("ignoreworlds").contains(name);
     }
 
-    public static $ getPlugin() {
-        return plugin;
+    public static void thr(boolean b, String message) {
+        if (b) throw new IllegalStateException(message);
     }
 }

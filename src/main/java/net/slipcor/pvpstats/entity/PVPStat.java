@@ -23,5 +23,6 @@ public class PVPStat {
     private int streak;
     private int currentstreak;
     private int elo;
+    private int score;
     private long time;
 }

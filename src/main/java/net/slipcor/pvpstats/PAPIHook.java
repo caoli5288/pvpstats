@@ -1,16 +1,21 @@
 package net.slipcor.pvpstats;
 
-import me.clip.placeholderapi.external.EZPlaceholderHook;
+import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.PlaceholderHook;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /**
  * Created by Yaël on 27/02/2016.
  */
-public class PAPIHook extends EZPlaceholderHook {
+public class PAPIHook extends PlaceholderHook {
 
     public PAPIHook(Plugin plugin) {
-        super(plugin, "slipcorpvpstats");
+    }
+
+    public boolean hook() {
+        PlaceholderAPI.registerPlaceholderHook("pvp", this);
+        return PlaceholderAPI.registerPlaceholderHook("slipcorpvpstats", this);
     }
 
     @Override
@@ -34,6 +39,10 @@ public class PAPIHook extends EZPlaceholderHook {
 
         if (s.equals("elo")) {
             return String.valueOf(PVPData.getEloScore(player));
+        }
+
+        if (s.equals("score")) {
+            return String.valueOf(PVPData.getScore(player));
         }
 
         return null;
