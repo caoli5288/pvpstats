@@ -44,4 +44,5 @@ top_limit: 20
 exchange:
 - id: sample
   command: say %player_name% 兑换了一份pvp积分礼包
+  permission: ''
   price: 100

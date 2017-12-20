@@ -29,6 +29,10 @@ public enum ExchangeMgr {
         Exchange exchange = INSTANCE.all.get(id);
         $.thr(exchange == null, "兑换不存在");
 
+        if (!(exchange.permission == null) && !exchange.permission.isEmpty() && !p.hasPermission(exchange.permission)) {
+            return;
+        }
+
         PVPStat pvp = EntityMgr.pull(p);
         if (pvp.getScore() < exchange.price) {// 无事发生
             return;
@@ -50,11 +54,13 @@ public enum ExchangeMgr {
 
         private String id;
         private String command;
+        private String permission;
         private int price;
 
         public Exchange(Map<?, ?> input) {
             id = input.get("id").toString();
             command = input.get("command").toString();
+            permission = input.get("permission").toString();
             price = toInt(input.get("price"));
         }
     }
