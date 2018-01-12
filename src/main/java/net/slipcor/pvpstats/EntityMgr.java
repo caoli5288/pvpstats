@@ -38,7 +38,7 @@ public enum EntityMgr {
                 stat.setName(p.getName());
             }
             return stat;
-        }, $.POOL));
+        }, $.getExecutor()));
     }
 
     public static void save(Player p, boolean kill) {
@@ -50,11 +50,15 @@ public enum EntityMgr {
         k.setTime(second);
         PVPStat pull = pull(p);
         pull.setTime(second);
-        $.POOL.execute(() -> $.getDataSource().save(Arrays.asList(pull, k)));
+        $.execute(() -> $.getDataSource().save(Arrays.asList(pull, k)));
     }
 
     public static void save(Player p) {
         $.getDataSource().save(pull(p));
+    }
+
+    public static void save(PVPStat p) {
+        $.execute(() -> $.getDataSource().save(p));
     }
 
     @SneakyThrows

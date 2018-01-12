@@ -13,6 +13,9 @@ permissions:
     pvpstats.reload:
         description: Ability to reload
         default: op
+    pvpstats.give_point:
+        description: Ability to give point
+        default: op
     pvpstats.cleanup:
         description: Ability to cleanup
         default: op

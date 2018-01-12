@@ -16,10 +16,10 @@ exchange:
   permission: '' # the permission required to exchange. not needed.
 - id: 'multi-command-sample'
   command: |
-    'say %player_name% 兑换了一份pvp积分礼包'
-    'xkit kit kit1 %player_name%'
+    say %player_name% 兑换了一份pvp积分礼包
+    xkit kit kit1 %player_name%
   price: 1000
   permission: 'pvpexchange.sample'
 ```
 
-Type `/pvpexchange <id>` to exchange.
+Type `/pvpexchange <id>` to exchange. `/pvpstats give_point <player> <point>` to force give point.

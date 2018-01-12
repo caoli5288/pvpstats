@@ -11,6 +11,7 @@ import net.slipcor.pvpstats.lh_support.LHKillHook;
 import net.slipcor.pvpstats.lh_support.LHMaxStreakHook;
 import net.slipcor.pvpstats.lh_support.LHStreakHook;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -34,7 +35,6 @@ import java.util.concurrent.Executors;
 
 public class $ extends JavaPlugin {
 
-    public static final ExecutorService POOL = Executors.newFixedThreadPool(1);
     private static $ plugin;
     @Getter
     private static EbeanHandler dataSource;
@@ -51,6 +51,8 @@ public class $ extends JavaPlugin {
     protected String dbKillTable = null;
     protected int dbPort = 3306;
     private PSPAPluginListener paPluginListener;
+
+    private ExecutorService executor;
 
     public void onEnable() {
         plugin = this;
@@ -90,6 +92,8 @@ public class $ extends JavaPlugin {
             }
         }
         dataSource.install(true);
+
+        executor = Executors.newFixedThreadPool(1);
 
         loadHooks();
 
@@ -221,6 +225,9 @@ public class $ extends JavaPlugin {
                 if (sender.hasPermission("pvpstats.reload")) {
                     sender.sendMessage("/pvpstats reload - reload the configs");
                 }
+                if (sender.hasPermission("pvpstats.give_point")) {
+                    sender.sendMessage("/pvpstats give_point <player> <point>");
+                }
                 if (sender.hasPermission("pvpstats.cleanup")) {
                     sender.sendMessage("/pvpstats cleanup - removes multi entries");
                 }
@@ -232,8 +239,19 @@ public class $ extends JavaPlugin {
                 }
             }
             return true;
-        } else if (args[0].equalsIgnoreCase("cleanup")) {
+        } else if (args[0].equalsIgnoreCase("give_point")) {
+            Player p = Bukkit.getPlayerExact(args[1]);
+            if (nil(p)) {
+                sender.sendMessage(ChatColor.RED + "!!! " + args[1] + " not online");
+                return false;
+            }
 
+            int point = Integer.parseInt(args[2]);
+
+            PVPStat stat = EntityMgr.pull(p);
+            stat.setScore(stat.getScore() + point);
+
+            EntityMgr.save(stat);
         } else if (args[0].equalsIgnoreCase("debug")) {
             if (!sender.hasPermission("pvpstats.debug")) {
                 sendPrefixed(sender, Language.MSG_NOPERMDEBUG.toString());
@@ -273,6 +291,7 @@ public class $ extends JavaPlugin {
     }
 
     public void onDisable() {
+        if (!nil(executor)) executor.shutdown();
         getLogger().info("disabled. (version " + getDescription().getVersion() + ")");
     }
 
@@ -281,6 +300,18 @@ public class $ extends JavaPlugin {
             return false;
         }
         return getConfig().getStringList("ignoreworlds").contains(name);
+    }
+
+    public static void execute(Runnable run) {
+        plugin.executor.execute(run);
+    }
+
+    public static ExecutorService getExecutor() {
+        return plugin.executor;
+    }
+
+    public static <T> boolean nil(T input) {
+        return input == null;
     }
 
     public static void thr(boolean b, String message) {
