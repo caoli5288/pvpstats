@@ -20,8 +20,13 @@ public enum ExchangeMgr {
 
     public static void init(List<Map<?, ?>> input) {
         input.forEach(mapping -> {
-            Exchange exchange = new Exchange(mapping);
-            INSTANCE.all.put(exchange.id, exchange);
+            Exchange exchange = null;
+            try {
+                exchange = new Exchange(mapping);
+            } catch (Exception e) {
+//                ;
+            }
+            if (!$.nil(exchange)) INSTANCE.all.put(exchange.id, exchange);
         });
     }
 
@@ -60,7 +65,7 @@ public enum ExchangeMgr {
         public Exchange(Map<?, ?> input) {
             id = input.get("id").toString();
             command = input.get("command").toString();
-            permission = input.get("permission").toString();
+            permission = input.containsKey("permission") ? input.get("permission").toString() : null;
             price = toInt(input.get("price"));
         }
     }
